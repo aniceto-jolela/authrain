@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'security' %}">Security</a></li>
+                <li>
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>
+                </li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+        <div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends 'users/base.html' %}
+{% block content %}
+    <h2>Profile</h2>
+    <hr/>
+    {% if messages %}
+        {% for sms in messages %}
+            <div class="callout primary" data-closable="slide-out-right">
+              <span>{{sms}}</span>
+              <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+        {% endfor %}
+        <br/>
+    {% endif %}
+
+      <div class="cell small-10 medium-4 large-4">
+          <br/>
+          <h4> <b>User:</b> {{ user.username }}</h4>
+          <h5><b>Name:</b> {{ user.first_name }} {{ user.last_name }}</h5>
+          <h5><b>Email:</b> {{ user.email }}</h5>
+      </div>
+    <br/><br/><br/>
+    <div>
+        <form method="POST" >
+            {% csrf_token %}
+            <div class="grid-container ">
+                <div class="grid-x grid-padding-x">
+                    <div class="small-12 medium-9 medium-offset-1 large-9 large-offset-1">
+                        <fieldset class="fieldset">
+                            <legend>Update the Account</legend>
+                            {{form.as_p }}
+                            <button class="submit button primary  small">Submit</button>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <a href="{% url 'change_password_dj' %}">Change password</a>
+    </div>
+
+{% endblock %}
