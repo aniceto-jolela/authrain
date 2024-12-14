@@ -30,7 +30,7 @@ def register_view(request):
             return render(request, 'users/registration_success.html', {'user': user})
         except Exception as e:
             return render(request, 'users/registration.html', {'error': str(e)})
-    return render(request, 'users/registration.html')
+    return render(request, 'users/registration.html', {'title': 'REGISTER'})
 
 
 def password_reset_view(request):
@@ -53,7 +53,7 @@ def password_reset_view(request):
                 return render(request, 'users/password_reset.html', {'error': error_message})
         except Exception as e:
             return render(request, 'users/password_reset.html', {'error': str(e)})
-    return render(request, 'users/password_reset.html')
+    return render(request, 'users/password_reset.html', {'title': 'PASSWORD RESET'})
 # END EMAIL/PASSWORD
 
 
@@ -69,7 +69,7 @@ def registration_dj(request):
             return redirect('home')
     else:
         form = UserRegistrationForm()
-    return render(request, 'users/registration_dj.html', {'form': form})
+    return render(request, 'users/registration_dj.html', {'form': form, 'title': 'REGISTRATION'})
 
 
 @login_required
@@ -86,7 +86,8 @@ def profile(request):
     else:
         form = UserUpdate(instance=request.user)
     context = {
-        'form': form
+        'form': form,
+        'title': 'PROFILE',
     }
     return render(request, 'users/profile.html', context)
 
@@ -104,22 +105,36 @@ def change_password_dj(request):
                 messages.error(request, f'An error occurred during update profile {e}')
     else:
         form = ChangePasswordDj(request.user)
-    return render(request, 'users/change_password_dj.html', {'form': form})
+    return render(request, 'users/change_password_dj.html', {'form': form, 'title': 'PASSWORD RESET'})
 
 # END USER/PASSWORD
 
 
+# BULMA XU
+def toggle_theme(request):
+    # Get the current theme from session (default to light mode)
+    current_theme = request.session.get('theme', 'light')
+
+    # Toggle theme
+    new_theme = 'dark' if current_theme == 'light' else 'light'
+    request.session['theme'] = new_theme  # Save new theme in session
+
+    # Redirect to the previous page
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+# ND BULMA
+
+
 def home(request):
-    return render(request, 'users/home.html')
+    return render(request, 'users/home.html', {'title': 'HOME'})
 
 
 def about(request):
-    return render(request, 'users/about.html')
+    return render(request, 'users/about.html', {'title': 'ABOUT'})
 
 
 @login_required
 def security(request):
-    return render(request, 'users/security.html')
+    return render(request, 'users/security.html', {'title': 'SECURITY'})
 
 
 

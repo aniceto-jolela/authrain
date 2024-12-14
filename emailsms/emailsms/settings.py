@@ -42,6 +42,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
+    'crispy_forms',
+    'crispy_bulma',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -127,6 +129,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ('bulma',)
+CRISPY_TEMPLATE_PACK = 'bulma'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
