@@ -1,8 +1,9 @@
 {% extends 'users/base.html' %}
+{% load static %}
 {% block content %}
     <h1>Security</h1>
     <p>
         Data security is the practice of protecting digital information from unauthorized access, corruption or theft throughout its entire lifecycle.
     </p>
-
+    <img src="{% static 'images/data_security.png' %}" width="500" alt="data security" />
 {% endblock %}

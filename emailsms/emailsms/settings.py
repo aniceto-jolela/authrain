@@ -128,6 +128,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static', # Replace 'static' with your actual static directory name
+]
 STATIC_URL = "static/"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ('bulma',)
