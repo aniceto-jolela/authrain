@@ -1,24 +1,90 @@
 {% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-    <h1>Login</h1>
-    <div>
-        <h3>Django</h3>
+     <style>
+        .tab-content {display: none; /* Hide all tab content by default */}
+        .tab-content.is-active {display: block; /* Show active tab content */}
+    </style>
+    <!-- Tabs Content -->
+    <div class="tabs is-small">
+      <ul>
+        <li class="is-active" data-tab="tab1"><a>Django</a></li>
+        <li data-tab="tab2"><a>Email/password</a></li>
+        <li data-tab="tab3"><a>Tab3</a></li>
+      </ul>
+    </div>
+     <!-- Tabs Content -->
+    <div id="tab1" class="tab-content is-active">
         <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Login</button>
-            <a href="{% url 'registration_dj'%}">Sign-up</a>
-        </form>
-    </div><br/>
-    <div>
-        <h3>Firebase</h3>
-        <h3>EMAIL/PASSWORD</h3>
-            <form action="{% url 'home' %}" method="POST">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="username" required><br/>
-            <input type="password" name="password" placeholder="password" required><br/>
-            <button type="submit">Login</button> &nbsp,
-            <a href="{% url 'password_reset'%}">Forget Password?</a>
+            <div class="field">
+                {% csrf_token %}
+                {{ form | crispy }}
+             </div>
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link is-small" type="submit">Login</button>
+                </div>
+                <div class="control">
+                    <a class="button is-light is-small" href="{% url 'registration_dj'%}">Sign-up</a>
+                </div>
+            </div>
         </form>
     </div>
+    <div id="tab2" class="tab-content">
+        <form action="{% url 'home' %}" method="POST">
+            {% csrf_token %}
+            <div class="field">
+              <label class="label">Email *</label>
+              <p class="control has-icons-left has-icons-right">
+                <input class="input" type="email" name="email" placeholder="Email" required>
+                <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+              </p>
+            </div>
+            <div class="field">
+              <label class="label">Password *</label>
+              <p class="control has-icons-left">
+                <input class="input" type="password" name="password" placeholder="Password" required>
+                <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+              </p>
+            </div>
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link is-small" type="submit">Login</button>
+                </div>
+                <div class="control">
+                    <a class="button is-ghost is-small" href="{% url 'password_reset'%}">Forget Password?</a>
+                </div>
+            </div>
+            <div class="field is-grouped">
+                <p> Do you not have an account yet?</p>
+                <a class="button is-ghost is-small" href="{% url 'register'%}">Sign-up</a>
+            </div>
+        </form>
+    </div>
+    <div id="tab3" class="tab-content">
+        <p>This is the content for Tab 3.</p>
+    </div>
+
+
+
+
+     <script>
+        // JavaScript to handle tab functionality
+        const tabs = document.querySelectorAll('.tabs ul li');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('is-active'));
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('is-active'));
+
+                // Add active class to clicked tab and show corresponding content
+                tab.classList.add('is-active');
+                const target = tab.getAttribute('data-tab');
+                document.getElementById(target).classList.add('is-active');
+            });
+        });
+    </script>
 {% endblock %}
