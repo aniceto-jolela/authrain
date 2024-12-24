@@ -60,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'users.middleware.FirebaseAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = "emailsms.urls"
@@ -136,7 +137,6 @@ STATIC_URL = "static/"
 CRISPY_ALLOWED_TEMPLATE_PACKS = ('bulma',)
 CRISPY_TEMPLATE_PACK = 'bulma'
 
-LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 
 # Default primary key field type

@@ -2,7 +2,10 @@
 {% block content %}
     {% if messages %}
         {% for sms in messages %}
-            <span>{{ sms }}</span>
+            <div class="notification {% if sms.tags == 'success' %}is-success {% elif sms.tags == 'error' %} is-danger {% else  %} is-info is-light{% endif %}">
+              <button class="delete"></button>
+              {{ sms }}
+            </div>
         {% endfor %}
     {% endif %}
     <h2 class="title">You come! </h2>

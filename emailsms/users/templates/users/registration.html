@@ -1,5 +1,29 @@
 {% extends 'users/base.html' %}
 {% block content %}
+<nav class="breadcrumb is-small" aria-label="breadcrumbs">
+  <ul>
+    <li>
+      <a href="{% url 'combined_login' %}">
+        <span class="icon is-small"><i class="fa-solid fa-arrow-right-to-bracket"></i></span>
+        <span>Login</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="#">
+        <span class="icon is-small"><i class="fa-solid fa-id-card" aria-hidden="true"></i></span>
+        <span>Register</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+<div class="columns is-multiline is-centered">
+<div class="column is-half">
+    {% if error %}
+        <div class="notification is-danger %}">
+          <button class="delete"></button>
+          {{ error }}
+        </div>
+    {% endif %}
     <form method="POST">
         {% csrf_token %}
         <div class="field">
@@ -22,7 +46,6 @@
             </div>
         </div>
     </form>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+</div>
+</div>
 {% endblock %}

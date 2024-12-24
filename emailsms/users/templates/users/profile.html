@@ -1,42 +1,67 @@
 {% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-    <h2>Profile</h2>
-    <hr/>
-    {% if messages %}
-        {% for sms in messages %}
-            <div class="callout primary" data-closable="slide-out-right">
-              <span>{{sms}}</span>
-              <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-        {% endfor %}
-        <br/>
-    {% endif %}
+<nav class="breadcrumb is-small" aria-label="breadcrumbs">
+  <ul>
+    <li class="is-active">
+      <a href="#">
+        <span class="icon is-small"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+        <span>Profile</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 
-      <div class="cell small-10 medium-4 large-4">
-          <br/>
-          <h4> <b>User:</b> {{ user.username }}</h4>
+{% if messages %}
+    {% for sms in messages %}
+        <div class="callout primary" data-closable="slide-out-right">
+          <span>{{sms}}</span>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+  <div>
+      {% if user.is_authenticated %}
+          <h4><b>User:</b> {{ user.username }}</h4>
           <h5><b>Name:</b> {{ user.first_name }} {{ user.last_name }}</h5>
           <h5><b>Email:</b> {{ user.email }}</h5>
-      </div>
-    <br/><br/><br/>
-    <div>
+      {% endif %}
+  </div>
+<br/><br/><br/>
+
+<nav class="breadcrumb is-small" aria-label="breadcrumbs">
+  <ul>
+    <li class="is-active">
+      <a href="#">
+        <span class="icon is-small"><i class="fa-solid fa-user" ></i></span>
+        <span>Profile</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="#">
+        <span class="icon is-small"><i class="fa-solid fa-user-pen" aria-hidden="true"></i></span>
+        <span>Update the Account</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+<div class="columns is-multiline is-centered">
+    <div class="column is-half">
         <form method="POST" >
             {% csrf_token %}
-            <div class="grid-container ">
-                <div class="grid-x grid-padding-x">
-                    <div class="small-12 medium-9 medium-offset-1 large-9 large-offset-1">
-                        <fieldset class="fieldset">
-                            <legend>Update the Account</legend>
-                            {{form.as_p }}
-                            <button class="submit button primary  small">Submit</button>
-                        </fieldset>
-                    </div>
+            {{form | crispy }}
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link is-small" type="submit">Submit</button>
+                </div>
+                <div class="control">
+                    <a class="button is-ghost is-small" href="{% url 'change_password_dj'%}">Change password</a>
                 </div>
             </div>
         </form>
-        <a href="{% url 'change_password_dj' %}">Change password</a>
     </div>
-
+</div>
 {% endblock %}

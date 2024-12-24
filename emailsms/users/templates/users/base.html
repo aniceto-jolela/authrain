@@ -40,7 +40,7 @@
             <div class="navbar-start">
               <a class="navbar-item {% if request.path == '/' %} is-selected {% endif %}" href="{% url 'home' %}"> Home </a>
               <a class="navbar-item {% if request.path == '/about/' %} is-selected {% endif %}" href="{% url 'about' %}"> About </a>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated or is_firebase_authenticated %}
               <a class="navbar-item {% if request.path == '/profile/' %} is-selected {% endif %}" href="{% url 'profile' %}"> Profile </a>
               <a class="navbar-item {% if request.path == '/security/' %} is-selected {% endif %}" href="{% url 'security' %}"> Security </a>
                 {% endif %}
@@ -52,7 +52,7 @@
                    <!-- Button to toggle theme -->
                     <form class="control" action="{% url 'toggle_theme' %}" method="POST">
                         {% csrf_token %}
-                        <button type="submit" class="button is-info">
+                        <button type="submit" class="button is-info is-small">
                             {% if request.session.theme == 'dark' %}
                                 Switch to Light Mode
                             {% else %}
@@ -61,13 +61,18 @@
                         </button>
                     </form>
                     {% if user.is_authenticated %}
-                        <form class="control" method="POST" action="{% url 'logout' %}">
+                        <form class="control" method="POST" action="{% url 'combined_logout' %}">
                             {% csrf_token %}
-                            <button class="bd-tw-button button" type="submit">Logout</button>
+                            <button class="bd-tw-button button is-small" type="submit" name="auth_type" value="django">Logout</button>
+                        </form>
+                    {% elif is_firebase_authenticated %}
+                         <form class="control" method="POST" action="{% url 'combined_logout' %}">
+                            {% csrf_token %}
+                            <button class="bd-tw-button button is-small" type="submit" name="auth_type" value="firebase">Firebase</button>
                         </form>
                     {% else %}
                          <p class="control">
-                            <a class="bd-tw-button button" data-social-action="tweet" href="{% url 'login' %}" >
+                            <a class="bd-tw-button button is-small" data-social-action="tweet" href="{% url 'combined_login' %}" >
                               <span> Login </span>
                             </a>
                          </p>
@@ -80,9 +85,7 @@
 
   <section class="section">
     <div class="container">
-        <div>
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
     </div>
   </section>
 
@@ -105,6 +108,22 @@
       $target.classList.toggle('is-active');
         });
       });
+    });
+    // Alert
+    document.addEventListener('DOMContentLoaded', () => {
+      (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        const $notification = $delete.parentNode;
+
+        $delete.addEventListener('click', () => {
+          $notification.parentNode.removeChild($notification);
+        });
+      });
+    });
+    // JavaScript Firebase Logout
+    firebase.auth().signOut().then(() => {
+        console.log('Firebase user logged out');
+    }).catch((error) => {
+        console.error('Error logging out from Firebase:', error);
     });
   </script>
   </body>
