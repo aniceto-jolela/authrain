@@ -16,4 +16,6 @@ urlpatterns = [
     path('logout/', views.combined_logout_view, name='combined_logout'),
     path('password-reset/', views.password_reset_view, name='password_reset'),
     path('toggle-theme/', views.toggle_theme, name='toggle_theme'),
+    path('send-otp/', views.send_otp, name='send_otp'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
 ]
