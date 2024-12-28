@@ -7,12 +7,17 @@
     </p>
     <img src="{% static 'images/data_security.png' %}" width="500" alt="data security" />
 
-
-    <form method="POST">
-        {% csrf_token %}
+    {% if user.is_authenticated %}
         <div class="control">
-            <button class="button is-danger is-small" type="submit" name="firebase_profile_delete">Delete account</button>
+            <a class="button is-danger is-small" href="{% url 'delete_user_confirm_dj' %}">Delete account</a>
         </div>
-    </form>
+    {% elif is_firebase_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="control">
+                <button class="button is-danger is-small" type="submit" name="firebase_profile_delete">Delete account</button>
+            </div>
+        </form>
+    {% endif %}
 
 {% endblock %}

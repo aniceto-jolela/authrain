@@ -1,0 +1,44 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block content %}
+    <form method="POST" action="{% url 'delete_authenticated_user_dj' %}">
+        {% csrf_token %}
+        <p>Are you sure you want to delete <strong class="title"> {{ user.username }} </strong>?</p>
+        <div class="content">
+            <article class="message is-warning"><br/>
+              <div class="icon-text">
+                  <span class="icon has-text-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </span>
+                  <span>Warning</span>
+              </div>
+              <div class="message-body">
+                We are permanently deleting this user.
+                <strong>It is a non -recommended safety practice.</strong>
+              </div>
+            </article>
+
+            <article class="message is-info">
+              <div class="icon-text">
+                  <span class="icon has-text-info">
+                    <i class="fas fa-info-circle"></i>
+                  </span>
+                  <span>Tip</span>
+              </div>
+              <div class="message-body">
+                  <strong>Best Practice</strong>
+                  <br/><br/>
+                  Instead of permanently deleting a user, consider implementing a soft delete by adding an <strong>is_active</strong> field or similar.
+                  <br/>
+                  <code>
+                     <span> { user.is_active = False <br/> user.save() }</span>
+
+                  </code>
+              </div>
+            </article>
+        </div>
+        <div class="control">
+            <button class="button is-danger is-small" type="submit" >Delete My Account</button>
+        </div>
+    </form>
+{% endblock %}

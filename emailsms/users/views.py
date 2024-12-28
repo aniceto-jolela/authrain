@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 import requests
 import os
 from firebase_admin import auth as firebase_auth
@@ -135,6 +135,21 @@ def change_password_dj(request):
     else:
         form = ChangePasswordDj(request.user)
     return render(request, 'users/change_password_dj.html', {'form': form, 'title': 'PASSWORD RESET'})
+
+
+def delete_authenticated_user_dj(request):
+    if request.method == 'POST':
+        user = request.user  # Get the currently authenticated user
+        try:
+            user.delete()  # Delete the user and their related data (if cascaded)
+            messages.success(request, "Your account and data have been deleted successfully.")
+            return redirect('home')  # Redirect to a safe page, e.g., home or login
+        except Exception as e:
+            messages.error(request, f"Error deleting account: {str(e)}")
+            return redirect('profile')  # Redirect back to profile in case of an error
+
+    return redirect('profile')  # Redirect for non-POST requests
+
 
 # END USER/PASSWORD
 
@@ -296,4 +311,7 @@ def security(request):
     return render(request, 'users/security.html', context)
 
 
+@login_required_firebase
+def delete_user_confirm_dj(request):
+    return render(request, 'users/delete_user_confirm_dj.html')
 
