@@ -105,6 +105,7 @@ def profile(request):
                 return redirect('profile')
             except Exception as e:
                 messages.error(request, f'Error updating email: {str(e)}')
+
         return redirect('profile')
     else:
         form = ''
@@ -223,12 +224,15 @@ def combined_logout_view(request):
             try:
                 # Invalidate Firebase user session by clearing token on client side.
                 # Note: Firebase logout is typically handled client-side.
-                request.session['is_firebase_authenticated'] = False
+                del request.session['is_firebase_authenticated']
+                del request.session['firebase_uid']
+                del request.session['is_firebase_email']
+
                 messages.success(request, "Successfully logged out from Firebase.")
             except Exception as e:
                 messages.error(request, f"Error logging out from Firebase: {e}")
         return redirect('combined_login')  # Redirect to login page
-    return redirect('home')  # If accessed without POST, go to home
+    return redirect('home')  # If accessed without POST, go home
 
 
 # BULMA XU
@@ -266,6 +270,25 @@ def about(request):
 @login_required_firebase
 def security(request):
     is_firebase_authenticated = request.session.get('is_firebase_authenticated', False)
+    if 'firebase_profile_delete' in request.POST:
+        firebase_uid = request.session.get('firebase_uid')
+        if not firebase_uid:
+            messages.error(request, 'User not authenticated with Firebase.')
+            return redirect('profile')
+        try:
+            email = request.session['is_firebase_email']
+            messages.success(request, f"User with email {email} has been deleted successfully.")
+
+            firebase_auth.delete_user(firebase_uid)
+            del request.session['is_firebase_authenticated']
+            del request.session['firebase_uid']
+            del request.session['is_firebase_email']
+            return redirect('home')
+        except firebase_auth.UserNotFoundError:
+            messages.error(request, "User not found.")
+        except Exception as e:
+            messages.error(request, f"Error deleting user: {str(e)}")
+
     context = {
         'title': 'SECURITY',
         'is_firebase_authenticated': is_firebase_authenticated
