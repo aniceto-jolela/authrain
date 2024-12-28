@@ -88,18 +88,34 @@ def profile(request):
                 except Exception as e:
                     messages.error(request, f'An error occurred during update profile {e}')
         elif 'firebase_profile' in request.POST:
+            firebase_uid = request.session.get('firebase_uid')  # Retrieve the user's Firebase UID from the session
+            new_email = request.POST.get('new_email')
+
+            if not firebase_uid:
+                messages.error(request, 'User not authenticated with Firebase.')
+                return redirect('combined_login')
             try:
-                messages.success(request, f'updated successfully!')
+                if request.session['is_firebase_email'] != new_email:
+                    # Update email in Firebase
+                    firebase_auth.update_user(firebase_uid, email=new_email)
+                    request.session['is_firebase_email'] = new_email
+                    messages.warning(request, 'This practice of redefining the email address is not recommended.')
+                else:
+                    messages.error(request, 'This email is already in use.')
+                return redirect('profile')
             except Exception as e:
-                messages.error(request, f'An error occurred during update profile {e}')
+                messages.error(request, f'Error updating email: {str(e)}')
+        return redirect('profile')
     else:
         form = ''
+        is_firebase_email = request.session.get('is_firebase_email')
         if request.user.is_authenticated:
             form = UserUpdate(instance=request.user)
         context = {
             'form': form,
             'is_firebase_authenticated': is_firebase_authenticated,
             'title': 'PROFILE',
+            'is_firebase_email': is_firebase_email
         }
         return render(request, 'users/profile.html', context)
 
@@ -152,12 +168,42 @@ def combined_login_view(request):
         elif 'firebase_login' in request.POST:  # Firebase login form submitted
             email = request.POST.get('email')
             password = request.POST.get('password')
+            if not email or not password:
+                messages.error(request, "Email and password are required.")
+                return redirect('combined_login')
+
+            # Firebase Authentication URL
+            auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
+
+            payload = {
+                "email": email,
+                "password": password,
+                "returnSecureToken": True
+            }
+
+            # firebase_token = request.POST.get('firebase_token')
             try:
-                user = firebase_auth.get_user_by_email(email)
-                # Add your custom Firebase authentication logic here
-                request.session['is_firebase_authenticated'] = True
-                messages.success(request, f"Successfully logged in via Firebase, {user.email}!.")
-                return redirect('home')
+                # Make the request to Firebase
+                response = requests.post(auth_url, json=payload)
+                response_data = response.json()
+
+                if 'idToken' in response_data:
+                    # Successful login
+                    firebase_token = response_data['idToken']
+                    firebase_uid = response_data['localId']
+                    email = response_data['email']
+
+                    # Store in session
+                    request.session['firebase_uid'] = firebase_uid
+                    request.session['is_firebase_authenticated'] = True
+                    request.session['is_firebase_email'] = email
+
+                    messages.success(request, f"Successfully logged in via Firebase, {email}!.")
+                    return redirect('home')
+                else:
+                    # Handle errors
+                    error_message = response_data.get('error', {}).get('message', 'An error occurred')
+                    messages.error(request, f"Login failed: {error_message}")
             except firebase_auth.UserNotFoundError:
                 messages.error(request, 'Firebase email or password not found')
             except Exception as e:

@@ -14,11 +14,9 @@
 
 {% if messages %}
     {% for sms in messages %}
-        <div class="callout primary" data-closable="slide-out-right">
-          <span>{{sms}}</span>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="notification {% if sms.tags == 'success' %}is-success {% elif sms.tags == 'warning' %} is-warning {% elif sms.tags == 'error' %} is-danger {% else  %} is-info {% endif %}">
+          <button class="delete"></button>
+          {{ sms }}
         </div>
     {% endfor %}
 {% endif %}
@@ -28,6 +26,8 @@
           <h4><b>User:</b> {{ user.username }}</h4>
           <h5><b>Name:</b> {{ user.first_name }} {{ user.last_name }}</h5>
           <h5><b>Email:</b> {{ user.email }}</h5>
+      {% elif is_firebase_authenticated %}
+        <h4><b>Email:</b> {{ is_firebase_email }}</h4>
       {% endif %}
   </div>
 <br/><br/><br/>
@@ -52,15 +52,50 @@
     <div class="column is-half">
         <form method="POST" >
             {% csrf_token %}
-            {{form | crispy }}
-            <div class="field is-grouped">
-                <div class="control">
-                    <button class="button is-link is-small" type="submit">Submit</button>
+            {% if not is_firebase_authenticated %}
+                {{form | crispy }}
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-link is-small" name="django_profile" type="submit">Submit</button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-ghost is-small" href="{% url 'change_password_dj'%}">Change password</a>
+                    </div>
+                </div>
+            {% elif is_firebase_authenticated %}
+                <div class="field">
+                    <label class="label" for="new_email">New Email: *</label>
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input" type="email" id="new_email" name="new_email" placeholder="Email" required>
+                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                    </p>
                 </div>
                 <div class="control">
-                    <a class="button is-ghost is-small" href="{% url 'change_password_dj'%}">Change password</a>
+                    <button class="button is-link is-small" name="firebase_profile" type="submit">Update Email</button>
                 </div>
-            </div>
+                <div class="content">
+                    <article class="message is-warning"><br/>
+                      <div class="message-body">
+                        Send email directly through your internal system when you update the user's email.
+                        <strong>It is a non -recommended safety practice.</strong>
+                      </div>
+                    </article>
+
+                    <article class="message is-info">
+                      <div class="message-body">
+                          Built-in Email Verification: <strong>Best Practice</strong>
+                          <br/><br/>
+                          When a user requests to update their email, sending a verification email to confirm the change helps ensure:
+
+                          <ol class="is-lower-alpha">
+                            <li>The user has access to the new email address.</li>
+                            <li>The new email is valid.</li>
+                            <li>The change request is not made by a malicious actor.</li>
+                          </ol>
+                      </div>
+                    </article>
+                </div>
+            {% endif %}
         </form>
     </div>
 </div>
