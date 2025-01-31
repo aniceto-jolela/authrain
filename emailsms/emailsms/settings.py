@@ -61,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'users.middleware.FirebaseAuthenticationMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = "emailsms.urls"
@@ -129,10 +130,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static', # Replace 'static' with your actual static directory name
+    BASE_DIR / 'static',
 ]
+
+
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ('bulma',)
 CRISPY_TEMPLATE_PACK = 'bulma'

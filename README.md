@@ -53,5 +53,10 @@ Or if you are looking for Full-Stack-Application with React / Django, go to this
 ```shell
     pip install gunicorn
 ```
+- whitenoise
+```shell
+    pip install whitenoise
+```
+#
 
-
+> python manage.py collectstatic

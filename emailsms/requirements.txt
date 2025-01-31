@@ -48,3 +48,4 @@ sqlparse==0.5.3
 typing_extensions==4.12.2
 uritemplate==4.1.1
 urllib3==1.26.20
+whitenoise==6.8.2
