@@ -18,7 +18,7 @@ from firebase_admin import credentials
 from dotenv import load_dotenv
 load_dotenv()
 
-cred = credentials.Certificate("sendemail-1f85c-firebase-adminsdk-j1yrw-44c91ae9c0.json")
+cred = credentials.Certificate("sendemail-1f85c-firebase-adminsdk-j1yrw-5cb3a81a0d.json")
 firebase_admin.initialize_app(cred)
 
 

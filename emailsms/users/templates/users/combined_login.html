@@ -20,8 +20,6 @@
           <ul>
             <li class="is-active" data-tab="tab1"><a>Django</a></li>
             <li data-tab="tab2"><a>Email/password</a></li>
-            <li data-tab="tab3"><a>Smartphone</a></li>
-            <li data-tab="tab4"><a>Tab4</a></li>
           </ul>
         </div>
          <!-- Tabs Content -->
@@ -80,51 +78,6 @@
                     <a class="button is-ghost is-small" href="{% url 'register'%}">Sign-up</a>
                 </div>
             </form>
-        </div>
-        <div id="tab3" class="tab-content">
-            {% if 2 == 5 %}
-                <form method="POST" id="" action="{% url 'send_otp' %}">
-                    {% csrf_token %}
-                    <div class="field">
-                      <label class="label">Phone Number *</label>
-                      <p class="control has-icons-left has-icons-right">
-                        <input class="input" type="tel" name="phone_number" placeholder="Enter your phone number" required>
-                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
-                      </p>
-                    </div>
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-link is-small" type="submit" name="firebase_phone_number">Send OTP</button>
-                        </div>
-                    </div>
-                </form>
-            {% else %}
-                <form method="POST" action="{% url 'verify_otp' %}">
-                    {% csrf_token %}
-                    <div class="field">
-                      <label class="label">Phone Number *</label>
-                      <p class="control has-icons-left has-icons-right">
-                        <input class="input" type="tel" name="phone_number" placeholder="Enter your phone number" required>
-                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
-                      </p>
-                    </div>
-                    <div class="field">
-                      <label class="label">OTP *</label>
-                      <p class="control has-icons-left has-icons-right">
-                        <input class="input" type="text" name="otp" placeholder="Enter OTP" required>
-                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
-                      </p>
-                    </div>
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-link is-small" type="submit" name="firebase_otp">Send OTP</button>
-                        </div>
-                    </div>
-                </form>
-            {% endif %}
-        </div>
-        <div id="tab4" class="tab-content">
-            <p>This is the content for Tab 3.</p>
         </div>
     </div>
 </div>

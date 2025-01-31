@@ -10,6 +10,7 @@ from .decorators import login_required_firebase, authenticated_home_required_fir
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
+from firebase_admin.exceptions import FirebaseError
 
 
 # Your Firebase project's API key (found in your Firebase console under Project Settings -> General -> Web API Key)
@@ -58,67 +59,6 @@ def password_reset_view(request):
             return render(request, 'users/password_reset.html', {'error': str(e)})
     return render(request, 'users/password_reset.html', {'title': 'PASSWORD RESET'})
 
-
-# END EMAIL/PASSWORD
-# SMARTPHONE
-
-@csrf_exempt
-def send_otp(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            phone_number = data.get('phone_number')  # Get phone number from request
-
-            if not phone_number:
-                messages.error(request, 'Phone number is required.')
-                return JsonResponse({'error': 'Phone number is required.'}, status=400)
-
-            # Send OTP via Firebase
-            session_info = firebase_auth.create_session_cookie(phone_number, valid_for=3600)  # Valid for 1 hour
-
-            # Store session_info on the backend or send it back to the client
-            return JsonResponse({'message': 'OTP sent successfully.', 'session_info': session_info}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Invalid request method.'}, status=405)
-
-
-@csrf_exempt
-def verify_otp(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            phone_number = data.get('phone_number')
-            otp = data.get('otp')  # OTP entered by the user
-
-            if not phone_number or not otp:
-                return JsonResponse({'error': 'Phone number and OTP are required.'}, status=400)
-
-            # Verify the OTP using Firebase
-            decoded_token = firebase_auth.verify_session_cookie(otp, check_revoked=True)
-
-            # Extract user info
-            firebase_uid = decoded_token.get('uid')
-            verified_phone_number = decoded_token.get('phone_number')
-
-            # Store the user's authentication status in the session
-            request.session['firebase_uid'] = firebase_uid
-            request.session['is_firebase_authenticated'] = True
-            request.session['phone_number'] = verified_phone_number
-
-            return JsonResponse({'message': 'Phone authentication successful.', 'uid': firebase_uid}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    return JsonResponse({'error': 'Invalid request method.'}, status=405)
-
-# END SMARTPHONE
-# FIREBASE
-
-
 # DJANGO
 # USER/PASSWORD
 def registration_dj(request):
@@ -154,14 +94,13 @@ def delete_authenticated_user_dj(request):
     if request.method == 'POST':
         user = request.user  # Get the currently authenticated user
         try:
-            user.delete()  # Delete the user and their related data (if cascaded)
+            user.delete()  
             messages.success(request, "Your account and data have been deleted successfully.")
-            return redirect('home')  # Redirect to a safe page, e.g., home or login
+            return redirect('home') 
         except Exception as e:
             messages.error(request, f"Error deleting account: {str(e)}")
-            return redirect('profile')  # Redirect back to profile in case of an error
-
-    return redirect('profile')  # Redirect for non-POST requests
+            return redirect('profile')  
+    return redirect('profile') 
 
 
 # END USER/PASSWORD
@@ -282,49 +221,6 @@ def combined_login_view(request):
                 messages.error(request, 'Firebase email or password not found')
             except Exception as e:
                 messages.error(request, str(e))
-        elif 'firebase_phone_number' in request.POST:
-            try:
-                data = json.loads(request.body)
-                phone_number = data.get('phone_number')  # Get phone number from request
-
-                if not phone_number:
-                    messages.error(request, 'Phone number is required.')
-                    return JsonResponse({'error': 'Phone number is required.'}, status=400)
-
-                # Send OTP via Firebase
-                session_info = firebase_auth.create_session_cookie(phone_number, valid_for=3600)  # Valid for 1 hour
-
-                # Store session_info on the backend or send it back to the client
-                return JsonResponse({'message': 'OTP sent successfully.', 'session_info': session_info}, status=200)
-
-            except Exception as e:
-                return JsonResponse({'error': str(e)}, status=500)
-
-        elif 'firebase_otp' in request.POST:
-            try:
-                data = json.loads(request.body)
-                phone_number = data.get('phone_number')
-                otp = data.get('otp')  # OTP entered by the user
-
-                if not phone_number or not otp:
-                    return JsonResponse({'error': 'Phone number and OTP are required.'}, status=400)
-
-                # Verify the OTP using Firebase
-                decoded_token = firebase_auth.verify_session_cookie(otp, check_revoked=True)
-
-                # Extract user info
-                firebase_uid = decoded_token.get('uid')
-                verified_phone_number = decoded_token.get('phone_number')
-
-                # Store the user's authentication status in the session
-                request.session['firebase_uid'] = firebase_uid
-                request.session['is_firebase_authenticated'] = True
-                request.session['phone_number'] = verified_phone_number
-
-                return JsonResponse({'message': 'Phone authentication successful.', 'uid': firebase_uid}, status=200)
-
-            except Exception as e:
-                return JsonResponse({'error': str(e)}, status=400)
     return render(request, 'users/combined_login.html', {'title': 'LOGIN'})
 
 

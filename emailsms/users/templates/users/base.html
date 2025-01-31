@@ -3,7 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% load static %}
+    <link rel="icon" type="image/png"
+      {% if request.session.theme == 'dark'%} href="{% static 'images/logo_white.png' %}"
+      {% else %} href="{% static 'images/logo_black.png' %}"
+      {% endif %}
+    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
       {% if title %}
         <title>{{title}}</title>
       {% else %}
@@ -27,7 +33,7 @@
                     <img src="{% static 'images/logo_black.png' %}"  alt="data security" />
                 {% endif %}
             </a>
-            <div class="navbar-burger js-burger" data-target="navbarExampleTransparentExample">
+            <div class="navbar-burger js-burger" data-target="navbarTransparent">
               <span></span>
               <span></span>
               <span></span>
@@ -35,8 +41,7 @@
             </div>
           </div>
 
-          <div id="navbarExampleTransparentExample" class="navbar-menu">
-
+          <div id="navbarTransparent" class="navbar-menu">
             <div class="navbar-start">
               <a class="navbar-item {% if request.path == '/' %} is-selected {% endif %}" href="{% url 'home' %}"> Home </a>
               <a class="navbar-item {% if request.path == '/about/' %} is-selected {% endif %}" href="{% url 'about' %}"> About </a>
@@ -68,7 +73,7 @@
                     {% elif is_firebase_authenticated %}
                          <form class="control" method="POST" action="{% url 'combined_logout' %}">
                             {% csrf_token %}
-                            <button class="bd-tw-button button is-small" type="submit" name="auth_type" value="firebase">Firebase</button>
+                            <button class="bd-tw-button button is-small" type="submit" name="auth_type" value="firebase">Logout</button>
                         </form>
                     {% else %}
                          <p class="control">
@@ -91,40 +96,33 @@
 
   <script>
       document.addEventListener('DOMContentLoaded', () => {
-
       // Get all "navbar-burger" elements
       const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
       // Add a click event on each of them
       $navbarBurgers.forEach( el => {
-      el.addEventListener('click', () => {
+        el.addEventListener('click', () => {
 
-      // Get the target from the "data-target" attribute
-      const target = el.dataset.target;
-      const $target = document.getElementById(target);
+          // Get the target from the "data-target" attribute
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
 
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      el.classList.toggle('is-active');
-      $target.classList.toggle('is-active');
+          // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+          });
+      });
+      });
+      // Alert
+      document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+          const $notification = $delete.parentNode;
+
+          $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+          });
         });
       });
-    });
-    // Alert
-    document.addEventListener('DOMContentLoaded', () => {
-      (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-        const $notification = $delete.parentNode;
-
-        $delete.addEventListener('click', () => {
-          $notification.parentNode.removeChild($notification);
-        });
-      });
-    });
-    // JavaScript Firebase Logout
-    firebase.auth().signOut().then(() => {
-        console.log('Firebase user logged out');
-    }).catch((error) => {
-        console.error('Error logging out from Firebase:', error);
-    });
   </script>
   </body>
 </html>
