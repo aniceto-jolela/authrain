@@ -21,7 +21,8 @@
     {% endfor %}
 {% endif %}
 
-  <div>
+  <div class="card">
+    <div class="card-content">
       {% if user.is_authenticated %}
           <h4><b>User:</b> {{ user.username }}</h4>
           <h5><b>Name:</b> {{ user.first_name }} {{ user.last_name }}</h5>
@@ -29,8 +30,9 @@
       {% elif is_firebase_authenticated %}
         <h4><b>Email:</b> {{ is_firebase_email }}</h4>
       {% endif %}
+    </div>
   </div>
-<br/><br/><br/>
+<br/>
 
 <nav class="breadcrumb is-small" aria-label="breadcrumbs">
   <ul>

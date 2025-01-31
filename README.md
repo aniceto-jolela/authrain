@@ -9,12 +9,11 @@ Used Technologies:
 - crispy-forms
 - crispy-bulma
 
-This website aims to make various types authentication and giving tips on good data security practices. Since the first script created on this website has been thought of `back-end` not on the `front-end`, I hope they have a good experience on the `client's side`.
+This website aims to make various types authentication and giving tips on good data security practices. When creating this website was thought of `backend` and in the authentication of Firebase Email / password not on the `front-end`. So I hope you have a good experience on the `cliete side`.
 
 #### Types of Authentication
 1. user / password
 2. email / password
-3. Smartphone
 
 Here is the [site]() link for those who want to take a test.
 

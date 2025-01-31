@@ -1,44 +1,94 @@
 {% extends 'users/base.html' %}
 {% load static %}
 {% block content %}
-    <h1>Security</h1>
-    <p>
-        Data security is the practice of protecting digital information from unauthorized access, corruption or theft throughout its entire lifecycle.
-    </p>
-    <img src="{% static 'images/data_security.png' %}" width="500" alt="data security" />
-    <div>
-        <h5 class="title is-5">Smartphone</h5>
+<div class="card">
+    <div class="card-header-title"><h1>Security</h1></div>
+    <div class="card-content">  
         <p>
-            Allows users to log in with a telephone number, using the user authentication Firebase SDK tools and smartphone checking.
+            Data security is the practice of protecting digital information from unauthorized access, corruption or theft throughout its entire lifecycle.
         </p>
-    </div>
-
-
-
-
-    {% if user.is_authenticated %}
-        <div class="control">
-            <a class="button is-danger is-small" href="{% url 'delete_user_confirm_dj' %}">Delete account</a>
+        <img src="{% static 'images/data_security.png' %}" width="500" alt="data security" />
+        <div class="card-header-title">
+            <h5 class="is-5">Reset Password (Firebase)</h5>
         </div>
-    {% elif is_firebase_authenticated %}
-        <form method="POST">
-            {% csrf_token %}
-            <div class="control">
-                <button class="button is-danger is-small" type="submit" name="firebase_profile_delete">Delete account</button>
-            </div>
-        </form>
-    {% endif %}
-    
-    {% if user.is_authenticated or is_firebase_authenticated %}
-        <p>AYou are sure you want to delete all users (Firebase and Authenticated Django)?</p>
-        <p>[warging] If you do you won't be able to reverse! </p>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="control">
-                <button class="button is-danger is-small" type="submit" name="delete_all_users">Delete All account</button>
-            </div>
-        </form>
-        
-    {% endif %}
+        <div class="card">
+                <code>
+                    def password_reset_view(request): <br/>
+                    if request.method == "POST":<br/>
+                        email = request.POST.get('email')<br/>
+                        try:<br/>
+                            # Firebase Password Reset API Endpoint<br/>
+                            url = f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={FIREBASE_API_KEY}"<br/>
+                            payload = {<br/>
+                                "requestType": "PASSWORD_RESET",<br/>
+                                "email": email,<br/>
+                            }<br/>
+                            response = requests.post(url, json=payload)<br/>
+                            response_data = response.json()<br/>
 
+                            if response.status_code == 200:<br/>
+                                messages.success(request, 'An email has been sent to reset your password. Please check your inbox.')<br/>
+                                return render(request, 'users/home.html')  # Redirect to success page<br/>
+                            else:<br/>
+                                error_message = response_data.get('error', {}).get('message', 'Something went wrong.')<br/>
+                                return render(request, 'users/password_reset.html', {'error': error_message})<br/>
+                        except Exception as e:<br/>
+                            return render(request, 'users/password_reset.html', {'error': str(e)})<br/>
+                    return render(request, 'users/password_reset.html', {'title': 'PASSWORD RESET'})<br/>
+
+                </code>
+            </div>
+            <div class="card-header-title">
+                <h5 class="is-5">Register (Firebase)</h5>
+            </div>
+            <div class="card-content">
+                <code>
+                    def register_view(request):<br/>
+                    if request.method == "POST":<br/>
+                        email = request.POST.get('email')<br/>
+                        password = request.POST.get('password')<br/>
+                        try:<br/>
+                            # Create a new user with email and password<br/>
+                            user = firebase_auth.create_user(<br/>
+                                email=email,<br/>
+                                password=password,<br/>
+                            )<br/>
+                            messages.success(request, f'Successful registered {user.email}!')<br/>
+                            return render(request, 'users/home.html', {'user': user})<br/>
+                        except Exception as e:<br/>
+                            return render(request, 'users/registration.html', {'error': str(e)})<br/>
+                    return render(request, 'users/registration.html', {'title': 'REGISTER'})<br/>
+                </code>
+            </div>
+        </div>
+    <div>
+
+
+    <div class="card-content">
+        {% if user.is_authenticated %}
+            <div class="control">
+                <a class="button is-warning is-small" href="{% url 'delete_user_confirm_dj' %}">Delete account</a>
+            </div>
+        {% elif is_firebase_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="control">
+                    <button class="button is-warning is-small" type="submit" name="firebase_profile_delete">Delete account</button>
+                </div>
+            </form>
+        {% endif %}
+        
+        {% if user.is_authenticated or is_firebase_authenticated %}
+            <p class="tag is-warning is-light">You are sure you want to delete all users (Firebase and Authenticated Django)?
+            <br/>If you do you won't be able to reverse! </p><br/><br/>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="control">
+                    <button class="button is-danger is-small" type="submit" name="delete_all_users">Delete All account (Firebase and Authenticated Django)</button>
+                </div>
+            </form>
+            
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
