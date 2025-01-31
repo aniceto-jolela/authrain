@@ -49,3 +49,9 @@ Or if you are looking for Full-Stack-Application with React / Django, go to this
 ```shell
     pip freeze > requirements.txt
 ```
+- Gunicorn
+```shell
+    pip install gunicorn
+```
+
+
