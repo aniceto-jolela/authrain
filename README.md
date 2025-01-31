@@ -45,3 +45,7 @@ Or if you are looking for Full-Stack-Application with React / Django, go to this
 ```shell
     pip install python-dotenv
 ```
+- Requirements
+```shell
+    pip freeze > requirements.txt
+```
