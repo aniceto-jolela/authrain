@@ -28,5 +28,17 @@
             </div>
         </form>
     {% endif %}
+    
+    {% if user.is_authenticated or is_firebase_authenticated %}
+        <p>AYou are sure you want to delete all users (Firebase and Authenticated Django)?</p>
+        <p>[warging] If you do you won't be able to reverse! </p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="control">
+                <button class="button is-danger is-small" type="submit" name="delete_all_users">Delete All account</button>
+            </div>
+        </form>
+        
+    {% endif %}
 
 {% endblock %}

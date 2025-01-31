@@ -301,7 +301,33 @@ def security(request):
             messages.error(request, "User not found.")
         except Exception as e:
             messages.error(request, f"Error deleting user: {str(e)}")
+    if 'delete_all_users' in request.POST:
+        try:
+            page = firebase_auth.list_users()
+            while page:
+                for user in page.users:
+                    try: 
+                        firebase_auth.delete_user(user.uid)
 
+                        del request.session['is_firebase_authenticated']
+                        del request.session['firebase_uid']
+                        del request.session['is_firebase_email']
+                        print(f"Deleted user {user.uid}")
+                    except Exception as e:
+                        print(f"Error deleting user {user.uid}")
+                page = page.get_next_page()
+                print("All users have been deleted.")
+            messages.success(request, "All Firebase users have been deleted successfully.")
+        except Exception as e:
+            print(f"Error fetching users: {str(e)}")
+    
+        try:
+            User.objects.all().delete()
+            messages.success(request, "All Django users have been deleted successfully.")
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f"Error deleting Django users: {str(e)}")
+        
     context = {
         'title': 'SECURITY',
         'is_firebase_authenticated': is_firebase_authenticated
